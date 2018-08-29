@@ -1,15 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import compose from 'recompose/compose';
 import NProgress from 'nprogress';
 import Router from 'next/router';
-import AppBar from '@material-ui/core/AppBar';
-import Github from '@material-ui/docs/svgIcons/GitHub';
-import NProgressBar from '@material-ui/docs/NProgressBar';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import MenuIcon from '@material-ui/icons/Menu';
+import ColorsIcon from '@material-ui/icons/InvertColors';
+import LightbulbOutlineIcon from '@material-ui/docs/svgIcons/LightbulbOutline';
+import LightbulbFullIcon from '@material-ui/docs/svgIcons/LightbulbFull';
+import NProgressBar from '@material-ui/docs/NProgressBar';
+import FormatTextdirectionLToR from '@material-ui/icons/FormatTextdirectionLToR';
+import FormatTextdirectionRToL from '@material-ui/icons/FormatTextdirectionRToL';
+import GithubIcon from '@material-ui/docs/svgIcons/GitHub';
+import Link from 'docs/src/modules/components/Link';
 import AppDrawer from 'docs/src/modules/components/AppDrawer';
 import { pageToTitle } from 'docs/src/modules/utils/helpers';
 
@@ -28,9 +37,6 @@ Router.onRouteChangeError = () => {
 const styles = theme => ({
   root: {
     display: 'flex',
-    alignItems: 'stretch',
-    minHeight: '100vh',
-    width: '100%',
   },
   grow: {
     flex: '1 1 auto',
@@ -50,12 +56,12 @@ const styles = theme => ({
   },
   appBarShift: {
     [theme.breakpoints.up('lg')]: {
-      width: 'calc(100% - 250px)',
+      width: 'calc(100% - 240px)',
     },
   },
   drawer: {
     [theme.breakpoints.up('lg')]: {
-      width: 250,
+      width: 240,
     },
   },
   navIconHide: {
@@ -70,12 +76,16 @@ class AppFrame extends React.Component {
     mobileOpen: false,
   };
 
-  handleDrawerToggle = () => {
-    this.setState({ mobileOpen: !this.state.mobileOpen });
+  handleDrawerOpen = () => {
+    this.setState({ mobileOpen: true });
+  };
+
+  handleDrawerClose = () => {
+    this.setState({ mobileOpen: false });
   };
 
   render() {
-    const { children, classes } = this.props;
+    const { children, classes, uiTheme } = this.props;
 
     if (!this.context.activePage) {
       throw new Error('Missing activePage.');
@@ -100,12 +110,13 @@ class AppFrame extends React.Component {
     return (
       <div className={classes.root}>
         <NProgressBar />
+        <CssBaseline />
         <AppBar className={appBarClassName}>
           <Toolbar>
             <IconButton
               color="inherit"
-              aria-label="open drawer"
-              onClick={this.handleDrawerToggle}
+              aria-label="Open drawer"
+              onClick={this.handleDrawerOpen}
               className={navIconClassName}
             >
               <MenuIcon />
@@ -116,20 +127,23 @@ class AppFrame extends React.Component {
               </Typography>
             )}
             <div className={classes.grow} />
-            <IconButton
-              component="a"
-              title="GitHub"
-              color="inherit"
-              href="https://github.com/oliviertassinari/react-swipeable-views"
-            >
-              <Github />
-            </IconButton>
+            <Tooltip title="GitHub repository" enterDelay={300}>
+              <IconButton
+                component="a"
+                color="inherit"
+                href="https://github.com/oliviertassinari/react-swipeable-views"
+                aria-label="GitHub repository"
+              >
+                <GithubIcon />
+              </IconButton>
+            </Tooltip>
           </Toolbar>
         </AppBar>
         <AppDrawer
           className={classes.drawer}
           disablePermanent={disablePermanent}
-          onClose={this.handleDrawerToggle}
+          onClose={this.handleDrawerClose}
+          onOpen={this.handleDrawerOpen}
           mobileOpen={this.state.mobileOpen}
         />
         {children}
@@ -141,14 +155,14 @@ class AppFrame extends React.Component {
 AppFrame.propTypes = {
   children: PropTypes.node.isRequired,
   classes: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  uiTheme: PropTypes.object.isRequired,
 };
 
 AppFrame.contextTypes = {
   activePage: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
-  }),
+  }).isRequired,
 };
 
-export default withStyles(styles, {
-  name: 'AppFrame',
-})(AppFrame);
+export default withStyles(styles)(AppFrame);
