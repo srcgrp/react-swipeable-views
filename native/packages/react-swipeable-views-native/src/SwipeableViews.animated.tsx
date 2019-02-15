@@ -333,7 +333,7 @@ class SwipeableViews extends React.Component<Props, State> {
     }
   };
 
-  animateIndexCurrent(index) {
+  animateIndexCurrent = index => {
     // Avoid starting an animation when we are already on the right value.
     if (getAnimatedValue(this.state.indexCurrent) !== index) {
       Animated.spring(this.state.indexCurrent, {
